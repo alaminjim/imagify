@@ -3,7 +3,7 @@ import { assets } from "../../public/images/assets";
 import { useAuth } from "../context/AppContext";
 
 const Navbar = () => {
-  const { user } = useAuth();
+  const { user, setShowLogin } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -46,7 +46,10 @@ const Navbar = () => {
             >
               Pricing
             </p>
-            <button className="bg-zinc-800 text-white lg:w-[146px] h-[42px] w-[90px] rounded-full ">
+            <button
+              onClick={() => setShowLogin(true)}
+              className="bg-zinc-800 text-white lg:w-[146px] h-[42px] w-[90px] rounded-full "
+            >
               Login
             </button>
           </div>
