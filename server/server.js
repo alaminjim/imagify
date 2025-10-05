@@ -1,0 +1,22 @@
+import express from "express";
+import cors from "cors";
+import "dotenv/config";
+import morgan from "morgan";
+import connectDB from "./config/mongodb.js";
+
+const PORT = process.env.PORT || 4000;
+const app = express();
+
+app.use(express.json());
+app.use(cors());
+app.use(morgan("dev"));
+
+await connectDB();
+
+app.get("/", (req, res) => {
+  res.send("api is working");
+});
+
+app.listen(PORT, () => {
+  console.log(`server is running port---> ${PORT}`);
+});
