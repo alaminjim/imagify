@@ -6,6 +6,7 @@ import Layouts from "../layouts/Layouts";
 import Footer from "../components/Footer";
 import Login from "../components/Login";
 import { useAuth } from "../context/AppContext";
+import PaymentSuccess from "../pages/PaymentSuccess";
 
 const Router = () => {
   const { showLogin } = useAuth();
@@ -17,6 +18,7 @@ const Router = () => {
         <Route path="/" element={<Home />}></Route>
         <Route path="/result" element={<Result />}></Route>
         <Route path="/buy" element={<BuyCredit />}></Route>
+        <Route path="/payment-success" element={<PaymentSuccess />} />
       </Routes>
       <Footer></Footer>
     </div>

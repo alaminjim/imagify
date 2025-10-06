@@ -1,9 +1,34 @@
 import { assets, plans } from "../../public/images/assets";
 import { useAuth } from "../context/AppContext";
 import { motion } from "motion/react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const BuyCredit = () => {
-  const { user } = useAuth();
+  const { user, token, loadCreditsData, backendUrl } = useAuth();
+
+  const handlePurchase = async (plan) => {
+    if (!user) {
+      toast.error("Please login first");
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/create-checkout-session`,
+        { planId: plan.id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.success) {
+        window.location.href = data.url; // Stripe checkout redirect
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to start payment");
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0.2, y: 100 }}
@@ -20,23 +45,35 @@ const BuyCredit = () => {
       </h1>
 
       <div className="flex flex-wrap justify-center gap-6 text-left">
-        {plans.map((item, index) => (
-          <div
-            key={index}
-            className="bg-white drop-shadow-sm  rounded-lg py-12 px-8 text-gray-600 hover:scale-105 transition-all duration-500"
-          >
-            <img width={40} src={assets.logo_icon} alt="" />
-            <p className="mt-3 mb-1 font-semibold">{item.id}</p>
-            <p className="text-sm">{item.desc}</p>
-            <p className="mt-6">
-              <span className="text-3xl font-medium">${item.price}</span> /{" "}
-              {item.credits} credits
-            </p>
-            <button className="w-full bg-gray-800 text-white mt-8 text-sm rounded-md py-2.5 min-w-52">
-              {user ? "Purchase" : "Get Started"}
-            </button>
-          </div>
-        ))}
+        {plans.map((item, index) => {
+          const purchased = user?.purchasedPlans?.includes(item.id);
+
+          return (
+            <div
+              key={index}
+              className="bg-white drop-shadow-sm rounded-lg py-12 px-8 text-gray-600 hover:scale-105 transition-all duration-500"
+            >
+              <img width={40} src={assets.logo_icon} alt="" />
+              <p className="mt-3 mb-1 font-semibold">{item.id}</p>
+              <p className="text-sm">{item.desc}</p>
+              <p className="mt-6">
+                <span className="text-3xl font-medium">${item.price}</span> /{" "}
+                {item.credits} credits
+              </p>
+              <button
+                onClick={() => handlePurchase(item)}
+                disabled={purchased}
+                className={`w-full mt-8 text-sm rounded-md py-2.5 min-w-52 ${
+                  purchased
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gray-800 text-white"
+                }`}
+              >
+                {purchased ? "Purchased" : user ? "Purchase" : "Get Started"}
+              </button>
+            </div>
+          );
+        })}
       </div>
     </motion.div>
   );
