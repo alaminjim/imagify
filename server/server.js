@@ -3,6 +3,8 @@ import cors from "cors";
 import "dotenv/config";
 import morgan from "morgan";
 import connectDB from "./config/mongodb.js";
+import userRoute from "./routes/userRoutes.js";
+import imageRouter from "./routes/imageRoutes.js";
 
 const PORT = process.env.PORT || 4000;
 const app = express();
@@ -12,6 +14,9 @@ app.use(cors());
 app.use(morgan("dev"));
 
 await connectDB();
+
+app.use("/api/user", userRoute);
+app.use("/api/image", imageRouter);
 
 app.get("/", (req, res) => {
   res.send("api is working");
