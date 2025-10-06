@@ -1,10 +1,10 @@
 import express from "express";
 import {
-  addCredits,
   createCheckoutSession,
   loginUser,
   registerUser,
   userCredits,
+  verifyPayment,
 } from "../controllers/userControllers.js";
 import { userAuth } from "../middlewares/auth.js";
 
@@ -14,6 +14,6 @@ userRoute.post("/register", registerUser);
 userRoute.post("/login", loginUser);
 userRoute.get("/credits", userAuth, userCredits);
 userRoute.post("/create-checkout-session", userAuth, createCheckoutSession);
-userRoute.post("/add-credits", userAuth, addCredits);
+userRoute.post("/verify-payment", userAuth, verifyPayment);
 
 export default userRoute;

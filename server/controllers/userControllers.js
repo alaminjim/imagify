@@ -2,24 +2,24 @@ import userModel from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Stripe from "stripe";
+import transactionModel from "../models/transactionModel.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+// ----------- USER AUTH -----------
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    if (!name || !email || !password) {
+    if (!name || !email || !password)
       return res
         .status(400)
         .json({ success: false, message: "Missing details" });
-    }
 
     const existingUser = await userModel.findOne({ email });
-    if (existingUser) {
+    if (existingUser)
       return res
         .status(400)
         .json({ success: false, message: "Email already exists" });
-    }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -64,6 +64,7 @@ export const loginUser = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
+
     res.json({
       success: true,
       token,
@@ -102,6 +103,7 @@ export const userCredits = async (req, res) => {
   }
 };
 
+// ----------- CREATE CHECKOUT SESSION -----------
 export const createCheckoutSession = async (req, res) => {
   try {
     const userId = req.user?.userId;
@@ -133,13 +135,12 @@ export const createCheckoutSession = async (req, res) => {
         .status(404)
         .json({ success: false, message: "User not found" });
 
-    // Prevent purchasing same plan twice
-    if (user.purchasedPlans.includes(planId)) {
+    if (user.purchasedPlans.includes(planId))
       return res
         .status(400)
         .json({ success: false, message: "Plan already purchased" });
-    }
 
+    // create checkout session with client_reference_id and metadata
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -156,8 +157,10 @@ export const createCheckoutSession = async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.FRONTEND_URL}/payment-success?userId=${user._id}&planId=${planId}&credits=${planDetails.credits}`,
+      success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
+      client_reference_id: user._id.toString(),
+      metadata: { planId: planId },
     });
 
     res.json({ success: true, url: session.url });
@@ -167,21 +170,25 @@ export const createCheckoutSession = async (req, res) => {
   }
 };
 
-export const addCredits = async (req, res) => {
+// ----------- VERIFY PAYMENT & ADD CREDITS -----------
+export const verifyPayment = async (req, res) => {
   try {
-    const { userId, planId } = req.body;
-
-    const planCredits = {
-      Basic: 100,
-      Advanced: 500,
-      Business: 5000,
-    };
-
-    if (!planCredits[planId]) {
+    const { session_id } = req.body;
+    if (!session_id)
       return res
         .status(400)
-        .json({ success: false, message: "Invalid planId" });
+        .json({ success: false, message: "Missing session_id" });
+
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+
+    if (session.payment_status !== "paid") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Payment not completed" });
     }
+
+    const userId = session.client_reference_id;
+    const planId = session.metadata.planId;
 
     const user = await userModel.findById(userId);
     if (!user)
@@ -189,27 +196,46 @@ export const addCredits = async (req, res) => {
         .status(404)
         .json({ success: false, message: "User not found" });
 
-    // Check if plan already purchased
-    if (user.purchasedPlans.includes(planId)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Plan already purchased" });
+    // Credits calculation
+    let creditsToAdd;
+    switch (planId) {
+      case "Basic":
+        creditsToAdd = 100;
+        break;
+      case "Advanced":
+        creditsToAdd = 500;
+        break;
+      case "Business":
+        creditsToAdd = 5000;
+        break;
+      default:
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid planId" });
     }
 
-    // Add credits & purchased plan
-    user.creditBalance += planCredits[planId];
-    user.purchasedPlans.push(planId);
-
+    // update user credits & purchasedPlans
+    user.creditBalance += creditsToAdd;
+    if (!user.purchasedPlans.includes(planId)) user.purchasedPlans.push(planId);
     await user.save();
+
+    // save transaction
+    const transaction = new transactionModel({
+      user: user._id,
+      planId,
+      credits: creditsToAdd,
+      amount: session.amount_total / 100,
+      status: "success",
+    });
+    await transaction.save();
 
     res.json({
       success: true,
-      message: `Added ${planCredits[planId]} credits`,
+      message: `Added ${creditsToAdd} credits`,
       creditBalance: user.creditBalance,
-      purchasedPlans: user.purchasedPlans,
     });
   } catch (error) {
-    console.error("addCredits error:", error);
+    console.error("verifyPayment error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
