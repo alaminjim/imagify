@@ -4,18 +4,29 @@ import axios from "axios";
 
 export const generateImage = async (req, res) => {
   try {
-    const { userId, prompt } = req.body;
+    const { prompt } = req.body;
+    const userId = req.user.userId;
 
     const user = await userModel.findById(userId);
 
-    if (!user || !prompt) {
-      res.json({ success: false, message: "Missing Details" });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    if (user.creditBalance === 0 || userModel.creditBalance < 0) {
-      return res.json({
+    if (!prompt) {
+      return res.status(400).json({
         success: false,
-        message: "No credit Balance",
+        message: "Prompt is required",
+      });
+    }
+
+    if (user.creditBalance <= 0) {
+      return res.status(200).json({
+        success: false,
+        message: "No credit balance left",
         creditBalance: user.creditBalance,
       });
     }
@@ -27,9 +38,7 @@ export const generateImage = async (req, res) => {
       "https://clipdrop-api.co/text-to-image/v1",
       formData,
       {
-        headers: {
-          "x-api-key": process.env.CLIPDROP_API_KEY,
-        },
+        headers: { "x-api-key": process.env.CLIPDROP_API_KEY },
         responseType: "arraybuffer",
       }
     );
@@ -37,18 +46,17 @@ export const generateImage = async (req, res) => {
     const base64Image = Buffer.from(data, "binary").toString("base64");
     const resultImage = `data:image/png;base64,${base64Image}`;
 
-    await userModel.findByIdAndUpdate(user._id, {
-      creditBalance: user.creditBalance - 1,
-    });
+    user.creditBalance -= 1;
+    await user.save();
 
-    res.json({
+    return res.json({
       success: true,
-      message: "Image generate",
-      creditBalance: user.creditBalance - 1,
+      message: "Image generated",
+      creditBalance: user.creditBalance,
       resultImage,
     });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error(error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
