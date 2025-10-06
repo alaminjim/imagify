@@ -2,10 +2,59 @@ import { useEffect, useState } from "react";
 import { assets } from "../../public/images/assets";
 import { useAuth } from "../context/AppContext";
 import { motion } from "motion/react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [state, setState] = useState("login");
-  const { setShowLogin } = useAuth();
+  const { setShowLogin, backendUrl, setToken, setUser } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (state === "login") {
+        const { data } = await axios.post(backendUrl + "/api/user/login", {
+          email,
+          password,
+        });
+
+        if (data.success) {
+          setToken(data.token);
+          setUser(data.user);
+
+          localStorage.setItem("token", data.token);
+
+          setShowLogin(false);
+          toast.success("Login Successful");
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        const { data } = await axios.post(backendUrl + "/api/user/register", {
+          name,
+          email,
+          password,
+        });
+
+        if (data.success) {
+          setToken(data.token);
+          setUser(data.user);
+          localStorage.setItem("token", data.token);
+          setShowLogin(false);
+          toast.success("Registration Successful");
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong! Please try again.");
+    }
+  };
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -18,6 +67,7 @@ const Login = () => {
   return (
     <div className="absolute fixed top-0 right-0 bottom-0 left-0 z-10 backdrop-blur-sm bg-black/30 flex justify-center items-center">
       <motion.form
+        onSubmit={handleSubmit}
         initial={{ opacity: 0.2, y: 50 }}
         transition={{ duration: 0.3 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -39,6 +89,8 @@ const Login = () => {
               placeholder="Full Name"
               required
               className="outline-none text-sm"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
         )}
@@ -49,6 +101,8 @@ const Login = () => {
             placeholder="Email"
             required
             className="outline-none text-sm"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="border border-[#D3D3D3] w-[295px] h-[42px] px-4 py-2 flex items-center gap-2 rounded-full mt-4">
@@ -58,6 +112,8 @@ const Login = () => {
             placeholder="password"
             required
             className="outline-none text-sm"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <p className="text-sm text-blue-600 my-2 cursor-pointer">
