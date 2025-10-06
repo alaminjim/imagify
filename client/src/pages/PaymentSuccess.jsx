@@ -5,34 +5,42 @@ import { useAuth } from "../context/AppContext";
 import { toast } from "react-toastify";
 
 const PaymentSuccess = () => {
-  const { token, loadCreditsData } = useAuth();
+  const { token, loadCreditsData, backendUrl } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
-    const userId = query.get("userId");
-    const planId = query.get("planId");
-    const credits = parseInt(query.get("credits"));
+    const session_id = query.get("session_id");
 
-    if (userId && planId && credits) {
-      axios
-        .post(
-          `${import.meta.env.VITE_BACKEND_URL}/api/user/add-credits`,
-          { userId, planId },
+    if (!session_id) {
+      toast.error("Invalid payment session");
+      navigate("/buy");
+      return;
+    }
+
+    // verify payment
+    const verifyPayment = async () => {
+      try {
+        const { data } = await axios.post(
+          `${backendUrl}/api/user/verify-payment`,
+          { session_id },
           { headers: { Authorization: `Bearer ${token}` } }
-        )
-        .then((res) => {
-          toast.success(`Payment successful! Added ${credits} credits.`);
+        );
+
+        if (data.success) {
+          toast.success(`Payment successful! Added credits.`);
           loadCreditsData();
           navigate("/buy");
-        })
-        .catch((err) => {
-          console.error(err);
-          toast.error("Failed to add credits");
-          navigate("/buy");
-        });
-    }
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Payment verification failed");
+        navigate("/buy");
+      }
+    };
+
+    verifyPayment();
   }, []);
 
   return (
