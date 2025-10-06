@@ -1,14 +1,28 @@
 import { useState } from "react";
 import { assets } from "../../public/images/assets";
 import { motion } from "motion/react";
+import { useAuth } from "../context/AppContext";
 
 const Result = () => {
-  const [image, setImage] = useState(assets.sample_img_1);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState("");
+  const { generateImage, generatedImage, setGeneratedImage } = useAuth();
 
-  const handleSubmit = async (e) => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (input) {
+      await generateImage(input);
+    }
+
+    setLoading(false);
+  };
+
+  const handleReset = () => {
+    setGeneratedImage(null);
+    setInput("");
+  };
 
   return (
     <motion.form
@@ -19,19 +33,22 @@ const Result = () => {
       onSubmit={handleSubmit}
       className="flex flex-col min-h-[90vh] justify-center items-center"
     >
-      <div>
-        <div className="relative">
-          <img src={assets.sample_img_1} alt="" className="max-w-sm rounded" />
-          <span
-            className={`absolute bottom-0 left-0 h-1 bg-blue-500 ${
-              loading ? "w-full transition-all duration-[10s]" : "w-0"
-            }`}
-          />
-        </div>
-        <p className={!loading ? "hidden" : ""}>Loading....</p>
+      <div className="relative">
+        <img
+          src={generatedImage || assets.sample_img_1}
+          alt="Generated"
+          className="max-w-sm rounded"
+        />
+        <span
+          className={`absolute bottom-0 left-0 h-1 bg-blue-500 ${
+            loading ? "w-full transition-all duration-[10s]" : "w-0"
+          }`}
+        />
       </div>
 
-      {!isImageLoaded && (
+      {loading && <p>Loading....</p>}
+
+      {!generatedImage && (
         <div className="w-full flex max-w-xl bg-neutral-500 text-white text-sm p-0.5 mt-10 rounded-full">
           <input
             onChange={(e) => setInput(e.target.value)}
@@ -49,16 +66,16 @@ const Result = () => {
         </div>
       )}
 
-      {isImageLoaded && (
+      {generatedImage && (
         <div className="flex gap-2 flex-wrap justify-center text-white text-sm p-0.5 mt-10 rounded-full">
           <p
-            onClick={() => setIsImageLoaded(false)}
+            onClick={handleReset}
             className="bg-transparent border border-zinc-900 text-black px-8 py-3 rounded-full cursor-pointer"
           >
             Generate Another
           </p>
           <a
-            href={image}
+            href={generatedImage}
             download
             className="bg-zinc-900 px-10 py-3 rounded-full cursor-pointer"
           >

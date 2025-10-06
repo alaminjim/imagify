@@ -6,10 +6,10 @@ import AppContextProvider from "./context/AppContext.jsx";
 import { ToastContainer } from "react-toastify";
 
 createRoot(document.getElementById("root")).render(
-  <AppContextProvider>
-    <BrowserRouter>
+  <BrowserRouter>
+    <AppContextProvider>
       <ToastContainer position="top-center" />
-      <Router></Router>
-    </BrowserRouter>
-  </AppContextProvider>
+      <Router />
+    </AppContextProvider>
+  </BrowserRouter>
 );

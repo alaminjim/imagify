@@ -1,8 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const AppContext = createContext();
 
@@ -11,15 +11,15 @@ const AppContextProvider = (props) => {
   const [showLogin, setShowLogin] = useState(false);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [credits, setCredits] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState(null);
+  const navigate = useNavigate();
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const loadCreditsData = async () => {
     try {
       const { data } = await axios.get(`${backendUrl}/api/user/credits`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (data.success) {
@@ -34,11 +34,38 @@ const AppContextProvider = (props) => {
     }
   };
 
+  const generateImage = async (prompt) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/image/generate-image`,
+        { prompt },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.success) {
+        loadCreditsData();
+        setGeneratedImage(data.resultImage);
+        return data.resultImage;
+      } else {
+        toast.error(data.message);
+        loadCreditsData();
+
+        if (data.creditBalance === 0) {
+          navigate("/buy");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong! Please try again.");
+    }
+  };
+
   const logOut = () => {
     localStorage.removeItem("token");
     setToken("");
     setUser(null);
-    toast.success("logout successful!");
+    setGeneratedImage(null);
+    toast.success("Logout successful!");
   };
 
   useEffect(() => {
@@ -59,6 +86,9 @@ const AppContextProvider = (props) => {
     backendUrl,
     loadCreditsData,
     logOut,
+    generateImage,
+    generatedImage,
+    setGeneratedImage,
   };
 
   return (
