@@ -10,7 +10,15 @@ const PORT = process.env.PORT || 4000;
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://imagify-ai-generate-3223.netlify.app",
+    ],
+    credentials: true,
+  })
+);
 app.use(morgan("dev"));
 
 await connectDB();
