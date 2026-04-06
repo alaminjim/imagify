@@ -27,7 +27,7 @@ const Testimonials = () => {
     >
       <motion.h1
         variants={itemVariants}
-        className="text-4xl md:text-5xl font-black mb-4 text-slate-900 tracking-tight text-center"
+        className="text-3xl md:text-4xl font-black mb-4 text-slate-900 tracking-tight text-center"
       >
         Loved by <span className="text-gradient">creators</span>
       </motion.h1>

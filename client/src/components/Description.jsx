@@ -10,7 +10,7 @@ const Description = () => {
       viewport={{ once: true }}
       className="flex flex-col items-center justify-center my-24 p-6 md:px-28"
     >
-      <h1 className="text-4xl md:text-5xl font-black mb-4 text-slate-900 tracking-tight">
+      <h1 className="text-3xl md:text-4xl font-black mb-4 text-slate-900 tracking-tight">
         Create AI <span className="text-gradient">Images</span>
       </h1>
       <p className="text-slate-500 mb-16 text-lg font-medium uppercase tracking-widest">
@@ -42,9 +42,9 @@ const Description = () => {
           ></motion.div>
         </div>
         <div className="flex-1 space-y-8 text-center md:text-left">
-          <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
+          <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight">
             Introducing the AI-Powered <br />
-            <span className="text-gradient text-3xl md:text-4xl">Text-to-Image</span> Generator
+            <span className="text-gradient text-2xl md:text-3xl">Text-to-Image</span> Generator
           </h2>
           <p className="text-slate-600 leading-relaxed text-lg font-medium">
             Easily bring your wildest ideas to life with our free AI image

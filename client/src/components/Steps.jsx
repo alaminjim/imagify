@@ -27,7 +27,7 @@ const Steps = () => {
     >
       <motion.h1
         variants={itemVariants}
-        className="text-4xl md:text-5xl font-black mb-4 text-slate-900"
+        className="text-3xl md:text-4xl font-black mb-4 text-slate-900"
       >
         How it <span className="text-gradient">works</span>
       </motion.h1>

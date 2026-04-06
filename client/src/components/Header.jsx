@@ -38,7 +38,7 @@ const Header = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.8 }}
-        className="text-5xl md:text-8xl font-black tracking-tight text-slate-900 max-w-4xl leading-[1.1]"
+        className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 max-w-3xl leading-[1.1]"
       >
         Turn text into <br />
         <span className="text-gradient">

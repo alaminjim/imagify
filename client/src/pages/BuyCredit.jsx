@@ -48,7 +48,7 @@ const BuyCredit = () => {
         </p>
       </motion.div>
 
-      <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-6 tracking-tight">
+      <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
         Scale your <span className="text-gradient">creativity</span>
       </h1>
       <p className="text-slate-500 text-lg mb-20 max-w-lg mx-auto leading-relaxed font-medium">

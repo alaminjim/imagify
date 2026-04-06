@@ -30,7 +30,7 @@ const Result = () => {
       className="flex flex-col items-center justify-center pt-24 min-h-[90vh] px-6"
     >
       <div className="w-full max-w-2xl">
-        <h1 className="text-4xl md:text-5xl font-black text-center mb-12 text-slate-900 tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-black text-center mb-12 text-slate-900 tracking-tight">
           Your <span className="text-gradient">Creation</span>
         </h1>
         

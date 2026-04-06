@@ -9,18 +9,35 @@ import imageRouter from "./routes/imageRoutes.js";
 const PORT = process.env.PORT || 4000;
 const app = express();
 
-// Check for required environment variables
+// 1. Strict Environment Variable Validation
 const requiredEnvVars = [
   "MONGODB_URI",
   "JWT_SECRET",
   "CLIPDROP_API_KEY",
   "STRIPE_SECRET_KEY",
 ];
-requiredEnvVars.forEach((varName) => {
-  if (!process.env[varName]) {
-    console.error(`MISSING ENVIRONMENT VARIABLE: ${varName}`);
+
+const checkEnvVars = () => {
+  const missing = requiredEnvVars.filter((v) => !process.env[v]);
+  if (missing.length > 0) {
+    console.error("FATAL ERROR: Missing environment variables:", missing.join(", "));
+    return false;
   }
-});
+  return true;
+};
+
+// 2. Database Connection Middleware
+// This ensures that for every request (especially cold starts on Vercel),
+// the database is fully connected before processing the query.
+const dbMiddleware = async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("DB MIDDLEWARE ERROR:", err.message);
+    res.status(500).json({ success: false, message: "Database connection failed" });
+  }
+};
 
 // CORS configuration
 app.use(
@@ -38,24 +55,23 @@ app.use(
 app.use(express.json());
 app.use(morgan("dev"));
 
+// Apply strict checks and DB connection to all API routes
+app.use("/api", dbMiddleware);
+
 app.use("/api/user", userRoute);
 app.use("/api/image", imageRouter);
 
 app.get("/", (req, res) => {
-  res.send("api is working");
+  res.send("Imagify API is working gracefully.");
 });
 
-// Connect to Database
-connectDB()
-  .then(() => {
-    console.log("Database connected successfully");
-  })
-  .catch((err) => {
-    console.error("Database connection failed:", err.message);
+// Start Server with pre-flight checks
+if (checkEnvVars()) {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port---> ${PORT}`);
   });
-
-app.listen(PORT, () => {
-  console.log(`server is running on port---> ${PORT}`);
-});
+} else {
+  console.log("Server halted due to missing configuration.");
+}
 
 export default app;

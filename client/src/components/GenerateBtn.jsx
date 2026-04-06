@@ -23,7 +23,7 @@ const GenerateBtn = () => {
       transition={{ duration: 1 }}
       className="flex flex-col items-center justify-center my-32 pb-24"
     >
-      <h1 className="text-4xl md:text-7xl font-black mb-12 text-slate-900 text-center tracking-tight leading-tight">
+      <h1 className="text-3xl md:text-5xl font-black mb-12 text-slate-900 text-center tracking-tight leading-tight">
         Ready to see the <br /> <span className="text-gradient">magic</span>? Try it now.
       </h1>
 
