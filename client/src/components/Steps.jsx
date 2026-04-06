@@ -1,6 +1,7 @@
 import { stepsData } from "../../public/images/assets";
 import { motion } from "motion/react";
 
+const Steps = () => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -61,5 +62,6 @@ import { motion } from "motion/react";
       </div>
     </motion.div>
   );
+};
 
 export default Steps;
