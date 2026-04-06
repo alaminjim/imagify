@@ -14,17 +14,33 @@ const stripe = process.env.STRIPE_SECRET_KEY
 // ----------- USER AUTH -----------
 export const googleAuth = async (req, res) => {
   try {
-    const { token: idToken } = req.body;
-    if (!idToken) {
+    const { token } = req.body;
+    if (!token) {
       return res.status(400).json({ success: false, message: "Missing Google Token" });
     }
 
-    const ticket = await client.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
+    let name, email;
 
-    const { name, email, sub: googleId } = ticket.getPayload();
+    // Check if it's a JWT (ID Token) or an Access Token
+    if (token.split(".").length === 3) {
+      // It's likely an ID Token
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      name = payload.name;
+      email = payload.email;
+    } else {
+      // It's likely an Access Token - fetch user info from Google API
+      const response = await axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`);
+      name = response.data.name;
+      email = response.data.email;
+    }
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Google authentication failed: Email not found" });
+    }
 
     let user = await userModel.findOne({ email });
 
@@ -33,26 +49,22 @@ export const googleAuth = async (req, res) => {
       user = new userModel({
         name,
         email,
-        // Password is not required for social login
-        creditBalance: 5, // starting credits
+        creditBalance: 5,
       });
       await user.save();
     }
 
     if (!process.env.JWT_SECRET) {
-      return res.status(500).json({
-        success: false,
-        message: "Missing JWT_SECRET in environment variables",
-      });
+      throw new Error("Missing JWT_SECRET in environment variables");
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
     res.json({
       success: true,
-      token,
+      token: jwtToken,
       user: {
         name: user.name,
         creditBalance: user.creditBalance,
@@ -60,8 +72,8 @@ export const googleAuth = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("googleAuth error:", error);
-    res.status(500).json({ success: false, message: "Google Authentication Failed" });
+    console.error("googleAuth error detail:", error);
+    res.status(500).json({ success: false, message: error.response?.data?.error_description || error.message || "Google Authentication Failed" });
   }
 };
 
