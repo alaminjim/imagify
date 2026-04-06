@@ -3,12 +3,68 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Stripe from "stripe";
 import transactionModel from "../models/transactionModel.js";
+import { OAuth2Client } from "google-auth-library";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY)
   : null;
 
 // ----------- USER AUTH -----------
+export const googleAuth = async (req, res) => {
+  try {
+    const { token: idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ success: false, message: "Missing Google Token" });
+    }
+
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { name, email, sub: googleId } = ticket.getPayload();
+
+    let user = await userModel.findOne({ email });
+
+    if (!user) {
+      // Create new user if not exists
+      user = new userModel({
+        name,
+        email,
+        // Password is not required for social login
+        creditBalance: 5, // starting credits
+      });
+      await user.save();
+    }
+
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({
+        success: false,
+        message: "Missing JWT_SECRET in environment variables",
+      });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        name: user.name,
+        creditBalance: user.creditBalance,
+        purchasedPlans: user.purchasedPlans,
+      },
+    });
+  } catch (error) {
+    console.error("googleAuth error:", error);
+    res.status(500).json({ success: false, message: "Google Authentication Failed" });
+  }
+};
+
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;

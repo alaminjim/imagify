@@ -4,6 +4,7 @@ import { useAuth } from "../context/AppContext";
 import { motion } from "motion/react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [state, setState] = useState("Login");
@@ -12,6 +13,36 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Google Login Handler
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      try {
+        const { data } = await axios.post(backendUrl + "/api/user/social-login", {
+          token: tokenResponse.credential || tokenResponse.access_token,
+        });
+
+        if (data.success) {
+          setToken(data.token);
+          setUser(data.user);
+          localStorage.setItem("token", data.token);
+          setShowLogin(false);
+          toast.success("Google Login Successful");
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        console.error("Google Login Error:", error);
+        toast.error("Google Authentication Failed");
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => {
+      toast.error("Google Login Failed");
+    },
+  });
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -163,6 +194,27 @@ const Login = () => {
             </span>
           )}
         </button>
+
+        {/* OR Divider */}
+        <div className="flex items-center my-8">
+          <div className="flex-1 border-t border-slate-100"></div>
+          <span className="mx-4 text-xs font-black text-slate-300 uppercase tracking-widest text-[10px]">Or continue with</span>
+          <div className="flex-1 border-t border-slate-100"></div>
+        </div>
+
+        {/* Social Login Buttons */}
+        <div className="grid grid-cols-1 gap-4">
+          <motion.button
+            type="button"
+            onClick={() => googleLogin()}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex items-center justify-center gap-3 w-full bg-white border-2 border-slate-100 py-3 rounded-2xl font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm"
+          >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="google" className="w-5" />
+            <span className="text-sm">Google</span>
+          </motion.button>
+        </div>
 
         <div className="mt-10 text-center text-sm font-bold">
           {state === "Login" ? (

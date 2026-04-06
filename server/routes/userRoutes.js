@@ -3,6 +3,7 @@ import {
   createCheckoutSession,
   loginUser,
   registerUser,
+  googleAuth,
   userCredits,
   verifyPayment,
 } from "../controllers/userControllers.js";
@@ -12,6 +13,7 @@ const userRoute = express.Router();
 
 userRoute.post("/register", registerUser);
 userRoute.post("/login", loginUser);
+userRoute.post("/social-login", googleAuth);
 userRoute.get("/credits", userAuth, userCredits);
 userRoute.post("/create-checkout-session", userAuth, createCheckoutSession);
 userRoute.post("/verify-payment", userAuth, verifyPayment);

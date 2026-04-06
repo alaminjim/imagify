@@ -5,11 +5,17 @@ import Router from "./routes/Routes.jsx";
 import AppContextProvider from "./context/AppContext.jsx";
 import { ToastContainer } from "react-toastify";
 
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <AppContextProvider>
-      <ToastContainer position="top-center" />
-      <Router />
-    </AppContextProvider>
+    <GoogleOAuthProvider clientId={clientId}>
+      <AppContextProvider>
+        <ToastContainer position="top-center" />
+        <Router />
+      </AppContextProvider>
+    </GoogleOAuthProvider>
   </BrowserRouter>
 );
