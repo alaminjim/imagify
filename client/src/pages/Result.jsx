@@ -46,7 +46,12 @@ const Result = () => {
         />
       </div>
 
-      {loading && <p>Loading....</p>}
+      {loading && (
+        <div className="flex flex-col items-center gap-2 mt-4">
+          <div className="w-10 h-10 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin" />
+          <p className="text-sm text-gray-500">Generating your masterpiece...</p>
+        </div>
+      )}
 
       {!generatedImage && (
         <div className="w-full flex max-w-xl bg-neutral-500 text-white text-sm p-0.5 mt-10 rounded-full">

@@ -9,7 +9,7 @@ import imageRouter from "./routes/imageRoutes.js";
 const PORT = process.env.PORT || 4000;
 const app = express();
 
-app.use(express.json());
+// CORS configuration
 app.use(
   cors({
     origin: [
@@ -17,11 +17,14 @@ app.use(
       "https://imagify-ai-generate-3223.netlify.app",
     ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-app.use(morgan("dev"));
+app.options("*", cors());
 
-await connectDB();
+app.use(express.json());
+app.use(morgan("dev"));
 
 app.use("/api/user", userRoute);
 app.use("/api/image", imageRouter);
@@ -30,6 +33,17 @@ app.get("/", (req, res) => {
   res.send("api is working");
 });
 
-app.listen(PORT, () => {
-  console.log(`server is running port---> ${PORT}`);
-});
+// Connect to Database and start server
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`server is running on port---> ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
