@@ -11,9 +11,11 @@ const Login = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       if (state === "Login") {
@@ -51,6 +53,8 @@ const Login = () => {
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Something went wrong! Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -142,8 +146,22 @@ const Login = () => {
           Forgot password?
         </p>
 
-        <button className="radiant-button w-full bg-slate-900 text-white rounded-[2rem] py-4 mt-10 font-black text-lg shadow-2xl">
-          {state === "Login" ? "Login Now" : "Create My Account"}
+        <button 
+          type="submit"
+          disabled={loading}
+          className="radiant-button w-full bg-slate-900 text-white rounded-2xl py-2.5 mt-8 font-bold text-base shadow-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed group"
+        >
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+              <span className="opacity-80">Please wait...</span>
+            </span>
+          ) : (
+            <span className="flex items-center justify-center gap-2">
+              {state === "Login" ? "Login Now" : "Create My Account"}
+              <span className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">→</span>
+            </span>
+          )}
         </button>
 
         <div className="mt-10 text-center text-sm font-bold">
