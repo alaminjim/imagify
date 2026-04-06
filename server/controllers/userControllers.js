@@ -2,6 +2,7 @@ import userModel from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Stripe from "stripe";
+import axios from "axios";
 import transactionModel from "../models/transactionModel.js";
 import { OAuth2Client } from "google-auth-library";
 
