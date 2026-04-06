@@ -29,7 +29,7 @@ const GenerateBtn = () => {
 
       <button
         onClick={handleOnClick}
-        className="radiant-button group relative px-16 py-7 bg-slate-900 text-white rounded-[2.5rem] font-black text-2xl overflow-hidden transition-all hover:pr-24 shadow-2xl shadow-indigo-500/20"
+        className="radiant-button group relative px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-xl overflow-hidden transition-all hover:pr-14 shadow-2xl shadow-indigo-500/20"
       >
         <span className="relative z-10">Start Creating Now</span>
         <img

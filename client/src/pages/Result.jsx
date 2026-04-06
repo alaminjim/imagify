@@ -97,7 +97,7 @@ const Result = () => {
             <button
               type="submit"
               disabled={loading || !input}
-              className="radiant-button bg-indigo-600 text-white px-12 py-5 rounded-[2rem] font-black text-lg disabled:opacity-50"
+              className="radiant-button bg-indigo-600 text-white px-8 py-3.5 rounded-[1.5rem] font-bold text-base disabled:opacity-50"
             >
               {loading ? "..." : "Generate"}
             </button>
@@ -106,14 +106,14 @@ const Result = () => {
           <div className="flex flex-wrap justify-center gap-6">
             <button
               onClick={() => { setIsImageLoaded(false); setGeneratedImage(null); }}
-              className="px-10 py-5 bg-white border-4 border-slate-900 text-slate-900 rounded-[2rem] font-black text-lg hover:bg-slate-50 transition-all shadow-xl active:scale-95"
+              className="px-8 py-3.5 bg-white border-2 border-slate-900 text-slate-900 rounded-[1.5rem] font-bold text-base hover:bg-slate-50 transition-all shadow-lg active:scale-95"
             >
               Generate Another
             </button>
             <a
               href={generatedImage}
               download
-              className="radiant-button px-12 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-lg shadow-2xl"
+              className="radiant-button px-8 py-3.5 bg-slate-900 text-white rounded-[1.5rem] font-bold text-base shadow-xl"
             >
               Download Art
             </a>

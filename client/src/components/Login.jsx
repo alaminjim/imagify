@@ -142,7 +142,7 @@ const Login = () => {
           Forgot password?
         </p>
 
-        <button className="radiant-button w-full bg-slate-900 text-white rounded-[2rem] py-5 mt-10 font-black text-xl shadow-2xl">
+        <button className="radiant-button w-full bg-slate-900 text-white rounded-[2rem] py-4 mt-10 font-black text-lg shadow-2xl">
           {state === "Login" ? "Login Now" : "Create My Account"}
         </button>
 
