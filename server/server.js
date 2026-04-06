@@ -33,17 +33,17 @@ app.get("/", (req, res) => {
   res.send("api is working");
 });
 
-// Connect to Database and start server
-const startServer = async () => {
-  try {
-    await connectDB();
-    app.listen(PORT, () => {
-      console.log(`server is running on port---> ${PORT}`);
-    });
-  } catch (error) {
-    console.error("Failed to start server:", error.message);
-    process.exit(1);
-  }
-};
+// Connect to Database
+connectDB()
+  .then(() => {
+    console.log("Database connected successfully");
+  })
+  .catch((err) => {
+    console.error("Database connection failed:", err.message);
+  });
 
-startServer();
+app.listen(PORT, () => {
+  console.log(`server is running on port---> ${PORT}`);
+});
+
+export default app;
