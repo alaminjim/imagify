@@ -17,21 +17,31 @@ const GenerateBtn = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0.2, y: 100 }}
+      initial={{ opacity: 0, y: 100 }}
       transition={{ duration: 1 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="pb-16 text-center"
+      className="flex flex-col items-center justify-center my-24 pb-16"
     >
-      <h2 className="text-2xl md:text-3xl lg:text-4xl mt-4 font-medium text-neutral-800 py-4 md:py-6">
+      <h1 className="text-3xl sm:text-5xl font-black mb-10 text-slate-900 text-center">
         See the magic. Try now
-      </h2>
+      </h1>
+
       <button
         onClick={handleOnClick}
-        className="inline-flex items-center gap-2 px-12 py-4 rounded-full bg-black text-white m-auto hover:scale-105 transition-all duration-500"
+        className="group relative px-12 py-5 bg-slate-900 text-white rounded-full font-bold text-xl overflow-hidden shadow-2xl hover:shadow-indigo-500/20 transition-all hover:pr-16"
       >
-        Generate Images <img className="w-6" src={assets.star_group} alt="" />
+        <span className="relative z-10">Generate Images</span>
+        <img
+          className="absolute right-6 top-1/2 -translate-y-1/2 w-6 opacity-0 group-hover:opacity-100 transition-all duration-300"
+          src={assets.star_group}
+          alt=""
+        />
       </button>
+
+      <p className="mt-8 text-slate-400 font-medium">
+        Join 50k+ creators. No credit card required.
+      </p>
     </motion.div>
   );
 };

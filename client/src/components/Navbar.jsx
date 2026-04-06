@@ -9,69 +9,99 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="flex items-center justify-between px-4 py-2">
-      <Link to="/">
-        <img src={assets.logo} alt="logo" className="w-28 md:w-32 lg:w-40" />
-      </Link>
+    <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-slate-200/50 px-4 py-3 sm:px-10 md:px-14 lg:px-28">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <Link to="/" className="hover:opacity-80 transition-opacity">
+          <img src={assets.logo} alt="logo" className="w-28 md:w-32 lg:w-36" />
+        </Link>
 
-      <div>
-        {user ? (
-          <div className="flex items-center gap-2 sm:gap-3 relative">
-            <button
-              onClick={() => navigate("/buy")}
-              className="flex items-center gap-2 bg-blue-100 px-4 sm:px-6 py-1.5 sm:py-3 rounded-full hover:scale-105 transition-all duration-700"
-            >
-              <img src={assets.credit_star} alt="credit star" className="w-5" />
-              <p className="text-xs sm:text-sm font-medium text-gray-600">
-                Credits left : {credits}
-              </p>
-            </button>
+        <div className="flex items-center gap-4 sm:gap-6">
+          {user ? (
+            <div className="flex items-center gap-3 sm:gap-6">
+              <button
+                onClick={() => navigate("/buy")}
+                className="hidden sm:flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-5 py-2 rounded-full hover:bg-indigo-100 transition-colors group"
+              >
+                <img
+                  src={assets.credit_star}
+                  alt="credit star"
+                  className="w-4 group-hover:rotate-12 transition-transform"
+                />
+                <p className="text-xs font-semibold text-indigo-600">
+                  {credits} Credits
+                </p>
+              </button>
 
-            <p className="text-gray-600 max-sm:hidden pl-4">Hi! {user.name}</p>
+              <div className="h-8 w-[1px] bg-slate-200 hidden sm:block"></div>
 
-            {/* User profile dropdown */}
-            <div className="relative">
-              <img
-                src={assets.profile_icon}
-                className="w-10 drop-shadow cursor-pointer"
-                alt="user"
-                onClick={() => setMenuOpen(!menuOpen)}
-              />
-              {menuOpen && (
-                <div className="absolute top-12 right-0 z-10 bg-white rounded-md border border-gray-200 shadow-lg">
-                  <ul className="list-none m-0 p-2 text-sm">
-                    <li
-                      onClick={() => {
-                        logOut();
-                        setMenuOpen(false);
-                      }}
-                      className="py-1 px-4 cursor-pointer hover:bg-gray-100"
-                    >
-                      Logout
-                    </li>
-                  </ul>
+              <div className="relative group">
+                <div
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                >
+                  <div className="hidden sm:block text-right">
+                    <p className="text-xs font-bold text-slate-800 line-clamp-1">
+                      {user.name}
+                    </p>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+                      Pro Member
+                    </p>
+                  </div>
+                  <div className="relative">
+                    <img
+                      src={assets.profile_icon}
+                      className="w-10 h-10 rounded-full border-2 border-indigo-500/20 p-0.5 group-hover:border-indigo-500 transition-colors"
+                      alt="user"
+                    />
+                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                  </div>
                 </div>
-              )}
+
+                {/* Dropdown Menu */}
+                <div className="absolute top-full right-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                  <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden py-2">
+                    <div className="px-4 py-2 border-b border-slate-100 sm:hidden">
+                      <p className="text-xs font-bold text-slate-800">
+                        {user.name}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => navigate("/buy")}
+                      className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors flex items-center gap-2"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                      Buy Credits
+                    </button>
+                    <button
+                      onClick={logOut}
+                      className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors flex items-center gap-2"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="flex items-center gap-5">
-            <p
-              onClick={() => navigate("/buy")}
-              className="text-[#545454] cursor-pointer"
-            >
-              Pricing
-            </p>
-            <button
-              onClick={() => setShowLogin(true)}
-              className="bg-zinc-800 text-white lg:w-[146px] h-[42px] w-[90px] rounded-full"
-            >
-              Login
-            </button>
-          </div>
-        )}
+          ) : (
+            <div className="flex items-center gap-4 sm:gap-8">
+              <Link
+                to="/buy"
+                className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block"
+              >
+                Pricing
+              </Link>
+              <button
+                onClick={() => setShowLogin(true)}
+                className="bg-slate-900 text-white px-8 py-2.5 rounded-full text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+              >
+                Login
+              </button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </nav>
   );
 };
 

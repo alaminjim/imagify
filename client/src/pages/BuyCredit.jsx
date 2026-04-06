@@ -31,49 +31,64 @@ const BuyCredit = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0.2, y: 100 }}
+      initial={{ opacity: 0, y: 100 }}
       transition={{ duration: 1 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="min-h-[80vh] text-center pt-14 mb-10"
+      className="min-h-[80vh] text-center pt-24 pb-12 px-6"
     >
-      <button className="border border-gray-400 px-10 py-2 rounded-full mb-6">
-        Our Plans
-      </button>
-      <h1 className="text-center text-3xl font-medium mb-6 sm:mb-10">
-        Choose the plan
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-4 py-1.5 rounded-full mb-6"
+      >
+        <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
+          Simple, Transparent Pricing
+        </p>
+      </motion.div>
+
+      <h1 className="text-4xl md:text-6xl font-black text-slate-900 mb-4">
+        Choose your plan
       </h1>
+      <p className="text-slate-500 text-lg mb-16 max-w-lg mx-auto leading-relaxed">
+        Unlock the full potential of AI generation with our flexible credit packs.
+      </p>
 
-      <div className="flex flex-wrap justify-center gap-6 text-left">
-        {plans.map((item, index) => {
-          const purchased = user?.purchasedPlans?.includes(item.id);
-
-          return (
-            <div
-              key={index}
-              className="bg-white drop-shadow-sm rounded-lg py-12 px-8 text-gray-600 hover:scale-105 transition-all duration-500"
-            >
-              <img width={40} src={assets.logo_icon} alt="" />
-              <p className="mt-3 mb-1 font-semibold">{item.id}</p>
-              <p className="text-sm">{item.desc}</p>
-              <p className="mt-6">
-                <span className="text-3xl font-medium">${item.price}</span> /{" "}
-                {item.credits} credits
-              </p>
-              <button
-                onClick={() => handlePurchase(item)}
-                disabled={purchased}
-                className={`w-full mt-8 text-sm rounded-md py-2.5 min-w-52 ${
-                  purchased
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-gray-800 text-white"
-                }`}
-              >
-                {purchased ? "Purchased" : user ? "Purchase" : "Get Started"}
-              </button>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl mx-auto items-center">
+        {plans.map((item, index) => (
+          <motion.div
+            key={index}
+            whileHover={{ y: -10 }}
+            className={`relative p-10 rounded-[2.5rem] transition-all duration-300 ${
+              item.id === "Intermediate"
+                ? "bg-slate-900 text-white shadow-2xl shadow-indigo-500/20 scale-105 z-10"
+                : "bg-white border border-slate-200 text-slate-900 shadow-xl"
+            }`}
+          >
+            {item.id === "Intermediate" && (
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-tighter shadow-lg">
+                Most Popular
+              </div>
+            )}
+            <img src={assets.logo_icon} alt="" className="w-12 mb-6" />
+            <h2 className="text-2xl font-black mb-2">{item.id}</h2>
+            <p className="text-sm font-medium mb-6 opacity-60 line-clamp-1">{item.desc}</p>
+            <div className="flex items-baseline justify-center gap-1 mb-8">
+              <span className="text-5xl font-black">${item.price}</span>
+              <span className="text-sm opacity-60">/ {item.credits} credits</span>
             </div>
-          );
-        })}
+            <button
+              onClick={() => handlePurchase(item)}
+              className={`w-full py-4 rounded-2xl font-black text-lg transition-all active:scale-95 ${
+                item.id === "Intermediate"
+                  ? "bg-white text-slate-900 hover:bg-slate-50"
+                  : "bg-slate-900 text-white hover:bg-slate-800"
+              }`}
+            >
+              {user ? "Get Started" : "Purchase Now"}
+            </button>
+          </motion.div>
+        ))}
       </div>
     </motion.div>
   );

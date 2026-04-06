@@ -2,39 +2,76 @@ import { assets, testimonialsData } from "../../public/images/assets";
 import { motion } from "motion/react";
 
 const Testimonials = () => {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0.2, y: 100 }}
-      transition={{ duration: 1 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial="hidden"
+      whileInView="visible"
       viewport={{ once: true }}
-      className="flex flex-col items-center justify-center my-20 py-12"
+      variants={containerVariants}
+      className="flex flex-col items-center justify-center my-32 p-6"
     >
-      <h1 className="text-3xl sm:text-4xl font-semibold mb-2">
+      <motion.h1
+        variants={itemVariants}
+        className="text-4xl md:text-5xl font-black mb-4 text-slate-900"
+      >
         Customer testimonials
-      </h1>
-      <p className="text-gray-500 mb-12">What Our Users Are Saying</p>
-
-      <div className="flex flex-wrap gap-6">
-        {testimonialsData.map((test, index) => (
-          <div
+      </motion.h1>
+      <motion.p
+        variants={itemVariants}
+        className="text-lg text-slate-500 mb-16"
+      >
+        What Our Users Are Saying
+      </motion.p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
+        {testimonialsData.map((item, index) => (
+          <motion.div
             key={index}
-            className="bg-white/20 shadow-md p-12 order w-80 m-auto cursor-pointer hover:scale-[1.02] transition-all duration-300 rounded-lg"
+            variants={itemVariants}
+            whileHover={{ y: -10 }}
+            className="glass-card p-8 rounded-3xl group transition-all duration-300"
           >
-            <div className="flex flex-col items-center">
-              <img src={test.image} alt="" className="rounded-full w-14" />
-              <h2 className="text-xl font-medium mt-3">{test.name}</h2>
-              <p className="text-gray-500 mb-4">{test.role}</p>
-              <div className="flex mb-4">
-                {Array(test.stars)
-                  .fill()
-                  .map((item, index) => (
-                    <img key={index} src={assets.rating_star} />
-                  ))}
+            <div className="flex items-center gap-4 mb-6">
+              <img
+                src={item.image}
+                alt=""
+                className="w-14 h-14 rounded-full border-2 border-indigo-100"
+              />
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">{item.name}</h2>
+                <p className="text-sm text-indigo-600 font-medium">{item.role}</p>
               </div>
-              <p className="text-center text-sm text-gray-600">{test.text}</p>
             </div>
-          </div>
+            <div className="flex gap-1 mb-4">
+              {Array(item.stars)
+                .fill("")
+                .map((item, index) => (
+                  <img
+                    key={index}
+                    src={assets.rating_star}
+                    alt=""
+                    className="w-4 h-4"
+                  />
+                ))}
+            </div>
+            <p className="text-slate-600 leading-relaxed italic">
+              "{item.text}"
+            </p>
+          </motion.div>
         ))}
       </div>
     </motion.div>

@@ -25,12 +25,13 @@ const AppContextProvider = (props) => {
       if (data.success) {
         setCredits(data.credits);
         setUser(data.user);
-      } else {
-        toast.error(data.message || "Failed to load credits");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong! Please try again.");
+      if (error.response?.status === 401) {
+        logOut();
+      }
+      toast.error(error.response?.data?.message || "Failed to load credits");
     }
   };
 
@@ -43,20 +44,21 @@ const AppContextProvider = (props) => {
       );
 
       if (data.success) {
-        loadCreditsData();
-        setGeneratedImage(data.resultImage);
+        await loadCreditsData();
         return data.resultImage;
       } else {
         toast.error(data.message);
-        loadCreditsData();
-
+        await loadCreditsData();
         if (data.creditBalance === 0) {
           navigate("/buy");
         }
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong! Please try again.");
+      toast.error(error.response?.data?.message || "Generation failed. Please try again.");
+      if (error.response?.status === 401) {
+        logOut();
+      }
     }
   };
 

@@ -44,8 +44,25 @@ const PaymentSuccess = () => {
   }, []);
 
   return (
-    <div className="min-h-[70vh] flex justify-center items-center text-xl">
-      Processing Payment...
+    <div className="min-h-[80vh] flex flex-col justify-center items-center px-6">
+      <div className="relative w-24 h-24 mb-8">
+        <div className="absolute inset-0 border-4 border-indigo-100 rounded-2xl"></div>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 border-4 border-indigo-600 border-t-transparent rounded-2xl"
+        ></motion.div>
+      </div>
+      <motion.p
+        animate={{ opacity: [0.4, 1, 0.4] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+        className="text-2xl font-black text-slate-900 tracking-tight"
+      >
+        Securing Your Payment...
+      </motion.p>
+      <p className="mt-4 text-slate-500 font-medium">
+        Please do not refresh this page.
+      </p>
     </div>
   );
 };

@@ -16,80 +16,99 @@ const Header = () => {
   };
   return (
     <motion.div
-      className="flex flex-col items-center justify-center text-center my-20"
-      initial={{ opacity: 0.2, y: 100 }}
-      transition={{ duration: 1 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      className="flex flex-col items-center justify-center text-center pt-32 pb-20 md:pt-48 md:pb-32"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
     >
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.8 }}
-        className="text-stone-500 inline-flex text-center gap-2 bg-white px-6 py-1  rounded-full border border-neutral-500"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-4 py-1.5 rounded-full mb-8"
       >
-        <p>Best time to image generator</p>
-        <img src={assets.star_icon} alt="" />
+        <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+        <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
+          The Future of Creativity is Here
+        </p>
+        <img src={assets.star_icon} alt="" className="w-3" />
       </motion.div>
+
       <motion.h1
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4, duration: 2 }}
-        className="text-4xl max-w-[300px] sm:text-7xl  sm:max-w-[590px] mx-auto mt-10 text-center"
-      >
-        Turn text to <span className="text-blue-600">image</span>, in seconds.
-      </motion.h1>
-      <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.8 }}
-        className="text-center max-w-xl mx-auto mt-5"
+        transition={{ delay: 0.4, duration: 0.8 }}
+        className="text-5xl md:text-8xl font-black tracking-tight text-slate-900 max-w-4xl leading-[1.1]"
       >
-        Unleash your creativity with AI. Turn your imagination into visual art
-        in seconds – just type, and watch the magic happen.
-      </motion.p>
-      <motion.button
-        onClick={handleOnClick}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        Turn text into <br />
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600">
+          visual magic
+        </span>
+      </motion.h1>
+
+      <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{
-          default: { duration: 0.5 },
-          opacity: { delay: 0.8, duration: 1 },
-        }}
-        className="btn btn-neutral mt-5 rounded-full w-[240px] h-[45px]"
+        transition={{ delay: 0.6, duration: 0.8 }}
+        className="text-lg md:text-xl text-slate-600 max-w-2xl mt-8 leading-relaxed"
       >
-        Generate Images <img className="w-6" src={assets.star_group} alt="" />
-      </motion.button>
+        Unleash your creativity with our state-of-the-art AI. From abstract concepts
+        to photorealistic art, if you can type it, we can generate it.
+      </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.8 }}
+        className="flex flex-col sm:flex-row items-center gap-4 mt-12"
+      >
+        <button
+          onClick={handleOnClick}
+          className="group relative px-8 py-4 bg-slate-900 text-white rounded-full font-bold text-lg overflow-hidden transition-all hover:pr-12 hover:shadow-2xl hover:shadow-indigo-500/30"
+        >
+          <span className="relative z-10">Start Generating</span>
+          <img
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-5 opacity-0 group-hover:opacity-100 transition-all duration-300"
+            src={assets.star_group}
+            alt=""
+          />
+        </button>
+        <button
+          onClick={() => navigate("/buy")}
+          className="px-8 py-4 bg-white border border-slate-200 text-slate-900 rounded-full font-bold text-lg hover:bg-slate-50 transition-all"
+        >
+          View Pricing
+        </button>
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
-        className="flex flex-warp justify-center mt-16 gap-3"
+        className="mt-24 w-full max-w-5xl"
       >
-        {Array(6)
-          .fill("")
-          .map((item, index) => (
-            <motion.img
-              whileHover={{ scale: 1.05, duration: 0.1 }}
-              className="rounded hover:scale-105 transition-all duration-300 cursor-pointer max-sm:w-10"
-              src={index % 2 === 0 ? assets.sample_img_2 : assets.sample_img_1}
-              alt=""
-              key={index}
-              width={70}
-            />
-          ))}
+        <div className="flex flex-wrap justify-center gap-4">
+          {Array(6)
+            .fill("")
+            .map((item, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="relative group cursor-pointer"
+              >
+                <img
+                  className="rounded-2xl shadow-lg w-20 md:w-32 lg:w-40 object-cover aspect-square border-2 border-white"
+                  src={index % 2 === 0 ? assets.sample_img_2 : assets.sample_img_1}
+                  alt=""
+                />
+                <div className="absolute inset-0 bg-indigo-600/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
+              </motion.div>
+            ))}
+        </div>
+        <p className="mt-6 text-sm font-medium text-slate-400">
+          Trusted by 50,000+ creators globally
+        </p>
       </motion.div>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.8 }}
-        className="mt-2 text-neutral-600"
-      >
-        Generated images from imagify
-      </motion.p>
     </motion.div>
   );
 };
