@@ -31,6 +31,13 @@ export const generateImage = async (req, res) => {
       });
     }
 
+    if (!process.env.CLIPDROP_API_KEY) {
+      return res.status(500).json({
+        success: false,
+        message: "Missing CLIPDROP_API_KEY in environment variables",
+      });
+    }
+
     const formData = new FormData();
     formData.append("prompt", prompt);
 

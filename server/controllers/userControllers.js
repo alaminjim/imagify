@@ -4,7 +4,9 @@ import jwt from "jsonwebtoken";
 import Stripe from "stripe";
 import transactionModel from "../models/transactionModel.js";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 // ----------- USER AUTH -----------
 export const registerUser = async (req, res) => {
@@ -26,6 +28,13 @@ export const registerUser = async (req, res) => {
 
     const user = new userModel({ name, email, password: hashedPassword });
     await user.save();
+
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({
+        success: false,
+        message: "Missing JWT_SECRET in environment variables",
+      });
+    }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
@@ -60,6 +69,13 @@ export const loginUser = async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Invalid credentials" });
+
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({
+        success: false,
+        message: "Missing JWT_SECRET in environment variables",
+      });
+    }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",

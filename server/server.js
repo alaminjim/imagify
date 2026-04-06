@@ -9,6 +9,19 @@ import imageRouter from "./routes/imageRoutes.js";
 const PORT = process.env.PORT || 4000;
 const app = express();
 
+// Check for required environment variables
+const requiredEnvVars = [
+  "MONGODB_URI",
+  "JWT_SECRET",
+  "CLIPDROP_API_KEY",
+  "STRIPE_SECRET_KEY",
+];
+requiredEnvVars.forEach((varName) => {
+  if (!process.env[varName]) {
+    console.error(`MISSING ENVIRONMENT VARIABLE: ${varName}`);
+  }
+});
+
 // CORS configuration
 app.use(
   cors({
