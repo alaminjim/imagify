@@ -81,85 +81,88 @@ const Login = () => {
         </button>
 
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-black text-slate-900 mb-2">{state}</h1>
-          <p className="text-slate-500 text-sm font-medium">
+          <h1 className="text-4xl font-black text-slate-900 mb-3 tracking-tight">
+            {state === "Login" ? "Welcome " : "Join "}
+            <span className="text-gradient">Back</span>
+          </h1>
+          <p className="text-slate-500 text-sm font-bold uppercase tracking-widest">
             {state === "Login"
-              ? "Welcome back! Please enter your details."
-              : "Start your creative journey today."}
+              ? "The future of AI is waiting"
+              : "Start your creative journey"}
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {state !== "Login" && (
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-600">
-                <img src={assets.user_icon} alt="" className="w-5 opacity-40 group-focus-within:opacity-100" />
+              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-600">
+                <img src={assets.user_icon} alt="" className="w-5 opacity-30 group-focus-within:opacity-100" />
               </div>
               <input
                 onChange={(e) => setName(e.target.value)}
                 value={name}
                 type="text"
-                className="w-full bg-slate-50 border border-slate-200 text-slate-900 pl-12 pr-4 py-4 rounded-2xl outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-medium"
-                placeholder="Full Name"
+                className="w-full bg-slate-50/50 border-2 border-slate-100 text-slate-900 pl-14 pr-5 py-4 rounded-3xl outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-bold"
+                placeholder="How should we call you?"
                 required
               />
             </div>
           )}
 
           <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-600">
-              <img src={assets.email_icon} alt="" className="w-5 opacity-40 group-focus-within:opacity-100" />
+            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-600">
+              <img src={assets.email_icon} alt="" className="w-5 opacity-30 group-focus-within:opacity-100" />
             </div>
             <input
               onChange={(e) => setEmail(e.target.value)}
               value={email}
               type="email"
-              className="w-full bg-slate-50 border border-slate-200 text-slate-900 pl-12 pr-4 py-4 rounded-2xl outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-medium"
+              className="w-full bg-slate-50/50 border-2 border-slate-100 text-slate-900 pl-14 pr-5 py-4 rounded-3xl outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-bold"
               placeholder="Email Address"
               required
             />
           </div>
 
           <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-600">
-              <img src={assets.lock_icon} alt="" className="w-5 opacity-40 group-focus-within:opacity-100" />
+            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-600">
+              <img src={assets.lock_icon} alt="" className="w-5 opacity-30 group-focus-within:opacity-100" />
             </div>
             <input
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               type="password"
-              className="w-full bg-slate-50 border border-slate-200 text-slate-900 pl-12 pr-4 py-4 rounded-2xl outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-medium"
-              placeholder="Password"
+              className="w-full bg-slate-50/50 border-2 border-slate-100 text-slate-900 pl-14 pr-5 py-4 rounded-3xl outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-bold"
+              placeholder="Your Secret Password"
               required
             />
           </div>
         </div>
 
-        <p className="text-xs text-indigo-600 font-bold mt-4 cursor-pointer hover:text-indigo-700 transition-colors text-right">
+        <p className="text-xs text-indigo-600 font-black mt-5 cursor-pointer hover:text-indigo-700 transition-colors text-right uppercase tracking-widest">
           Forgot password?
         </p>
 
-        <button className="w-full bg-slate-900 text-white rounded-2xl py-4 mt-8 font-bold text-lg hover:shadow-xl hover:shadow-indigo-500/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300">
-          {state === "Login" ? "Login" : "Create account"}
+        <button className="radiant-button w-full bg-slate-900 text-white rounded-[2rem] py-5 mt-10 font-black text-xl shadow-2xl">
+          {state === "Login" ? "Login Now" : "Create My Account"}
         </button>
 
-        <div className="mt-8 text-center text-sm font-medium">
+        <div className="mt-10 text-center text-sm font-bold">
           {state === "Login" ? (
-            <p className="text-slate-500">
+            <p className="text-slate-400 uppercase tracking-widest text-[10px]">
               Don't have an account?{" "}
               <span
                 onClick={() => setState("Sign Up")}
-                className="text-indigo-600 font-bold cursor-pointer hover:underline"
+                className="text-indigo-600 font-black cursor-pointer hover:underline ml-1"
               >
                 Sign up
               </span>
             </p>
           ) : (
-            <p className="text-slate-500">
+            <p className="text-slate-400 uppercase tracking-widest text-[10px]">
               Already have an account?{" "}
               <span
                 onClick={() => setState("Login")}
-                className="text-indigo-600 font-bold cursor-pointer hover:underline"
+                className="text-indigo-600 font-black cursor-pointer hover:underline ml-1"
               >
                 Login
               </span>

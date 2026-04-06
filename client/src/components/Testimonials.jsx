@@ -27,48 +27,48 @@ const Testimonials = () => {
     >
       <motion.h1
         variants={itemVariants}
-        className="text-4xl md:text-5xl font-black mb-4 text-slate-900"
+        className="text-4xl md:text-5xl font-black mb-4 text-slate-900 tracking-tight text-center"
       >
-        Customer testimonials
+        Loved by <span className="text-gradient">creators</span>
       </motion.h1>
       <motion.p
         variants={itemVariants}
-        className="text-lg text-slate-500 mb-16"
+        className="text-lg text-slate-500 mb-16 font-medium uppercase tracking-widest text-center"
       >
-        What Our Users Are Saying
+        What our users are saying
       </motion.p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 w-full max-w-6xl">
         {testimonialsData.map((item, index) => (
           <motion.div
             key={index}
             variants={itemVariants}
-            whileHover={{ y: -10 }}
-            className="glass-card p-8 rounded-3xl group transition-all duration-300"
+            whileHover={{ y: -12, boxShadow: "0 25px 50px -12px rgba(139, 92, 246, 0.15)" }}
+            className="glass-card p-10 rounded-[3rem] group transition-all duration-500 border-2 border-white/50"
           >
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-5 mb-8">
               <img
                 src={item.image}
                 alt=""
-                className="w-14 h-14 rounded-full border-2 border-indigo-100"
+                className="w-16 h-16 rounded-2xl border-4 border-white shadow-lg object-cover"
               />
               <div>
-                <h2 className="text-xl font-bold text-slate-900">{item.name}</h2>
-                <p className="text-sm text-indigo-600 font-medium">{item.role}</p>
+                <h2 className="text-xl font-black text-slate-900 leading-tight">{item.name}</h2>
+                <p className="text-sm text-indigo-600 font-bold uppercase tracking-tighter">{item.role}</p>
               </div>
             </div>
-            <div className="flex gap-1 mb-4">
+            <div className="flex gap-1 mb-6">
               {Array(item.stars)
                 .fill("")
-                .map((item, index) => (
+                .map((_, i) => (
                   <img
-                    key={index}
+                    key={i}
                     src={assets.rating_star}
                     alt=""
-                    className="w-4 h-4"
+                    className="w-4 h-4 drop-shadow-sm"
                   />
                 ))}
             </div>
-            <p className="text-slate-600 leading-relaxed italic">
+            <p className="text-slate-600 leading-relaxed font-medium italic">
               "{item.text}"
             </p>
           </motion.div>

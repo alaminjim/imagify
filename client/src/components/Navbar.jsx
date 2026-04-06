@@ -87,13 +87,13 @@ const Navbar = () => {
             <div className="flex items-center gap-4 sm:gap-8">
               <Link
                 to="/buy"
-                className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block"
+                className="text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors hidden sm:block"
               >
-                Pricing
+                Features
               </Link>
               <button
                 onClick={() => setShowLogin(true)}
-                className="bg-slate-900 text-white px-8 py-2.5 rounded-full text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                className="radiant-button bg-slate-900 text-white px-8 py-2.5 rounded-full text-sm font-bold shadow-xl shadow-indigo-500/10"
               >
                 Login
               </button>

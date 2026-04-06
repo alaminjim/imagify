@@ -1,53 +1,58 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Inter:wght@100..900&display=swap");
 
 @import "tailwindcss";
+
 @plugin "daisyui";
 
 @theme {
-  --color-primary: #6366f1;
-  --color-secondary: #8b5cf6;
+  --color-primary: #8b5cf6;
+  --color-secondary: #ec4899;
   --color-accent: #f43f5e;
-  --color-dark: #0f172a;
-  --color-glass: rgba(255, 255, 255, 0.7);
-  --font-outfit: "Outfit", sans-serif;
-  --font-inter: "Inter", sans-serif;
+  --color-slate-900: #0f172a;
+  --color-indigo-600: #4f46e5;
+  --color-violet-600: #7c3aed;
+  --color-rose-500: #f43f5e;
 }
 
-* {
-  font-family: var(--font-outfit);
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
-}
-
-body {
-  @apply bg-slate-50 text-slate-900 antialiased overflow-x-hidden;
-}
-
-.glass-card {
-  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
-}
-
-.premium-gradient {
-  @apply bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600;
-}
-
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
-}
-
-@keyframes shimmer {
-  to {
-    background-position-x: -200%;
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 font-['Inter'] selection:bg-indigo-100 selection:text-indigo-900;
+    background-image: radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.05) 0px, transparent 50%);
   }
 }
 
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
+  }
+
+  .premium-gradient {
+    @apply bg-gradient-to-br from-indigo-600 via-violet-600 to-rose-500;
+  }
+
+  .radiant-button {
+    @apply relative overflow-hidden transition-all duration-500 active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1), 0 4px 6px -2px rgba(79, 70, 229, 0.05);
+  }
+
+  .radiant-button:hover {
+    box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.2), 0 10px 10px -5px rgba(79, 70, 229, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 font-black;
+  }
+
+  .mesh-bg {
+    background-color: #ffffff;
+    background-image: 
+      radial-gradient(at 10% 10%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
+      radial-gradient(at 90% 10%, rgba(236, 72, 153, 0.1) 0px, transparent 50%),
+      radial-gradient(at 50% 90%, rgba(79, 70, 229, 0.05) 0px, transparent 50%);
+  }
+}
 .placeholder-color {
   color: #94a3b8;
   font-weight: 300;
