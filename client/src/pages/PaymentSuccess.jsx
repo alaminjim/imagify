@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AppContext";
 import { toast } from "react-toastify";
+import { motion } from "motion/react";
+
 
 const PaymentSuccess = () => {
   const { token, loadCreditsData, backendUrl } = useAuth();
