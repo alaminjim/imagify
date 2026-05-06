@@ -18,8 +18,10 @@ services:
         sync: false
       - key: STRIPE_SECRET_KEY
         sync: false
+      - key: CLIPDROP_API_KEY
+        sync: false
       - key: FRONTEND_URL
-        value: https://imagify.onrender.com
+        value: https://imagify-ai-generate-3223.netlify.app
 
   # Static Site for Frontend
   - type: static
