@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { assets } from "../../public/images/assets";
 import { useAuth } from "../context/AppContext";
 import { motion } from "motion/react";
@@ -9,6 +10,12 @@ import { useGoogleLogin } from "@react-oauth/google";
 const Login = () => {
   const [state, setState] = useState("Login");
   const { setShowLogin, backendUrl, setToken, setUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    setShowLogin(false);
+    navigate("/");
+  };
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -109,7 +116,8 @@ const Login = () => {
         <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-violet-500/10 rounded-full blur-3xl"></div>
 
         <button
-          onClick={() => setShowLogin(false)}
+          type="button"
+          onClick={handleClose}
           className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-900 transition-colors"
         >
           <img src={assets.cross_icon} alt="" className="w-4" />
