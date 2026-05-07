@@ -26,8 +26,9 @@ const Login = () => {
     onSuccess: async (tokenResponse) => {
       setLoading(true);
       try {
+        const token = tokenResponse.access_token;
         const { data } = await axios.post(backendUrl + "/api/user/social-login", {
-          token: tokenResponse.credential || tokenResponse.access_token,
+          token,
         });
 
         if (data.success) {
@@ -38,17 +39,21 @@ const Login = () => {
           toast.success("Google Login Successful");
         } else {
           toast.error(data.message);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Google Login Error:", error);
         toast.error("Google Authentication Failed");
-      } finally {
         setLoading(false);
       }
     },
     onError: () => {
       toast.error("Google Login Failed");
+      setLoading(false);
     },
+    onNonOAuthError: () => {
+      setLoading(false);
+    }
   });
 
   const onSubmitHandler = async (e) => {
@@ -214,7 +219,10 @@ const Login = () => {
         <div className="grid grid-cols-1 gap-4">
           <motion.button
             type="button"
-            onClick={() => googleLogin()}
+            onClick={() => {
+              setLoading(true);
+              googleLogin();
+            }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="flex items-center justify-center gap-3 w-full bg-white border-2 border-slate-100 py-3 rounded-2xl font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm"

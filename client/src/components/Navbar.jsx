@@ -58,26 +58,39 @@ const Navbar = () => {
                 </div>
 
                 {/* Dropdown Menu */}
-                <div className="absolute top-full right-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                <div className={`absolute top-full right-0 mt-2 w-48 transition-all duration-300 transform ${menuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'} sm:group-hover:opacity-100 sm:group-hover:visible sm:group-hover:translate-y-0`}>
                   <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden py-2">
-                    <div className="px-4 py-2 border-b border-slate-100 sm:hidden">
-                      <p className="text-xs font-bold text-slate-800">
+                    <div className="px-4 py-3 border-b border-slate-100 sm:hidden">
+                      <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black mb-1">Signed in as</p>
+                      <p className="text-sm font-bold text-slate-800 line-clamp-1">
                         {user.name}
                       </p>
                     </div>
+                    
+                    <div className="px-4 py-2 border-b border-slate-100 sm:hidden">
+                      <div className="flex items-center justify-between text-xs font-bold text-indigo-600">
+                        <span>Credits</span>
+                        <span>{credits}</span>
+                      </div>
+                    </div>
+
                     <button
-                      onClick={() => navigate("/buy")}
-                      className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors flex items-center gap-2"
+                      onClick={() => { navigate("/buy"); setMenuOpen(false); }}
+                      className="w-full text-left px-4 py-3 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors flex items-center gap-3"
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                      Buy Credits
+                      <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                        <img src={assets.credit_star} alt="" className="w-4" />
+                      </div>
+                      <span className="font-bold">Buy Credits</span>
                     </button>
                     <button
-                      onClick={logOut}
-                      className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors flex items-center gap-2"
+                      onClick={() => { logOut(); setMenuOpen(false); }}
+                      className="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition-colors flex items-center gap-3"
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                      Logout
+                      <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                        <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                      </div>
+                      <span className="font-bold">Logout</span>
                     </button>
                   </div>
                 </div>

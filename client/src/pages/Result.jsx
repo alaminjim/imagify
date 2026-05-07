@@ -85,19 +85,19 @@ const Result = () => {
         {!isImageLoaded ? (
           <form
             onSubmit={onSubmitHandler}
-            className="group relative flex w-full max-w-2xl mx-auto bg-slate-900 p-2.5 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all overflow-hidden focus-within:ring-4 focus-within:ring-indigo-500/20"
+            className="group relative flex flex-col sm:flex-row w-full max-w-2xl mx-auto bg-slate-900 p-2 sm:p-2.5 rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all overflow-hidden focus-within:ring-4 focus-within:ring-indigo-500/20"
           >
             <input
               onChange={(e) => setInput(e.target.value)}
               value={input}
               type="text"
               placeholder="A futuristic city with purple neon lights..."
-              className="flex-1 bg-transparent border-none outline-none text-white px-8 py-5 text-lg placeholder:text-slate-500 font-bold"
+              className="flex-1 bg-transparent border-none outline-none text-white px-6 sm:px-8 py-4 sm:py-5 text-sm sm:text-lg placeholder:text-slate-500 font-bold min-w-0"
             />
             <button
               type="submit"
               disabled={loading || !input}
-              className="radiant-button bg-indigo-600 text-white px-8 py-3.5 rounded-[1.5rem] font-bold text-base disabled:opacity-50"
+              className="radiant-button bg-indigo-600 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-[1.5rem] sm:rounded-[1.8rem] font-bold text-sm sm:text-base disabled:opacity-50 transition-all active:scale-95 whitespace-nowrap"
             >
               {loading ? "..." : "Generate"}
             </button>

@@ -29,15 +29,6 @@ const checkEnvVars = () => {
 // 2. Database Connection Middleware
 // This ensures that for every request (especially cold starts on Vercel),
 // the database is fully connected before processing the query.
-const dbMiddleware = async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    console.error("DB MIDDLEWARE ERROR:", err.message);
-    res.status(500).json({ success: false, message: "Database connection failed" });
-  }
-};
 
 // CORS configuration
 app.use(
@@ -57,7 +48,6 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 // Apply strict checks and DB connection to all API routes
-app.use("/api", dbMiddleware);
 
 app.use("/api/user", userRoute);
 app.use("/api/image", imageRouter);
@@ -66,11 +56,18 @@ app.get("/", (req, res) => {
   res.send("Imagify API is working gracefully.");
 });
 
-// Start Server with pre-flight checks
+// Start Server with pre-flight checks and DB connection
 if (checkEnvVars()) {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port---> ${PORT}`);
-  });
+  connectDB()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`Server is running on port---> ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error("Failed to connect to DB:", err.message);
+      process.exit(1);
+    });
 } else {
   console.log("Server halted due to missing configuration.");
 }

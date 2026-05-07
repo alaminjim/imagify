@@ -15,6 +15,7 @@ const stripe = process.env.STRIPE_SECRET_KEY
 // ----------- USER AUTH -----------
 export const googleAuth = async (req, res) => {
   try {
+    console.time("googleAuth_total");
     const { token } = req.body;
     if (!token) {
       return res.status(400).json({ success: false, message: "Missing Google Token" });
@@ -24,7 +25,7 @@ export const googleAuth = async (req, res) => {
 
     // Check if it's a JWT (ID Token) or an Access Token
     if (token.split(".").length === 3) {
-      // It's likely an ID Token
+      console.time("google_verify_id_token");
       const ticket = await client.verifyIdToken({
         idToken: token,
         audience: process.env.GOOGLE_CLIENT_ID,
@@ -32,21 +33,26 @@ export const googleAuth = async (req, res) => {
       const payload = ticket.getPayload();
       name = payload.name;
       email = payload.email;
+      console.timeEnd("google_verify_id_token");
     } else {
-      // It's likely an Access Token - fetch user info from Google API
-      const response = await axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`);
+      console.time("google_fetch_userinfo");
+      const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 5000,
+      });
       name = response.data.name;
       email = response.data.email;
+      console.timeEnd("google_fetch_userinfo");
     }
 
     if (!email) {
       return res.status(400).json({ success: false, message: "Google authentication failed: Email not found" });
     }
 
+    console.time("db_user_lookup");
     let user = await userModel.findOne({ email });
 
     if (!user) {
-      // Create new user if not exists
       user = new userModel({
         name,
         email,
@@ -54,6 +60,7 @@ export const googleAuth = async (req, res) => {
       });
       await user.save();
     }
+    console.timeEnd("db_user_lookup");
 
     if (!process.env.JWT_SECRET) {
       throw new Error("Missing JWT_SECRET in environment variables");
@@ -63,6 +70,7 @@ export const googleAuth = async (req, res) => {
       expiresIn: "7d",
     });
 
+    console.timeEnd("googleAuth_total");
     res.json({
       success: true,
       token: jwtToken,
