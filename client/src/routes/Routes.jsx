@@ -9,6 +9,8 @@ import { useAuth } from "../context/AppContext";
 import PaymentSuccess from "../pages/PaymentSuccess";
 import { motion } from "motion/react";
 
+import ProtectedRoute from "../components/ProtectedRoute";
+
 const Router = () => {
   const { showLogin } = useAuth();
   return (
@@ -36,9 +38,23 @@ const Router = () => {
         {showLogin && <Login></Login>}
         <Routes>
           <Route path="/" element={<Home />}></Route>
-          <Route path="/result" element={<Result />}></Route>
+          <Route
+            path="/result"
+            element={
+              <ProtectedRoute>
+                <Result />
+              </ProtectedRoute>
+            }
+          ></Route>
           <Route path="/buy" element={<BuyCredit />}></Route>
-          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route
+            path="/payment-success"
+            element={
+              <ProtectedRoute>
+                <PaymentSuccess />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         <Footer></Footer>
       </div>

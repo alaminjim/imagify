@@ -67,6 +67,7 @@ const AppContextProvider = (props) => {
     setToken("");
     setUser(null);
     setGeneratedImage(null);
+    setShowLogin(true);
     toast.success("Logout successful!");
   };
 

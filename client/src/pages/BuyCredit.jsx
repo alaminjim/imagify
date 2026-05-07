@@ -59,34 +59,34 @@ const BuyCredit = () => {
         {plans.map((item, index) => (
           <motion.div
             key={index}
-            whileHover={{ y: -15, scale: item.id === "Intermediate" ? 1.08 : 1.03 }}
+            whileHover={{ y: -15, scale: item.id === "Advanced" ? 1.08 : 1.03 }}
             className={`relative p-12 rounded-[3rem] transition-all duration-500 ${
-              item.id === "Intermediate"
+              item.id === "Advanced"
                 ? "bg-slate-900 text-white shadow-[0_40px_80px_-15px_rgba(79,70,229,0.3)] z-10 border-4 border-indigo-500"
                 : "bg-white border-2 border-slate-100 text-slate-900 shadow-2xl"
             }`}
           >
-            {item.id === "Intermediate" && (
+            {item.id === "Advanced" && (
               <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest shadow-xl ring-4 ring-white">
                 Best Value
               </div>
             )}
             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-10 border ${
-              item.id === "Intermediate" ? "bg-white/10 border-white/20" : "bg-indigo-50 border-indigo-100"
+              item.id === "Advanced" ? "bg-white/10 border-white/20" : "bg-indigo-50 border-indigo-100"
             }`}>
               <img src={assets.logo_icon} alt="" className="w-8" />
             </div>
             
             <h2 className="text-2xl font-black mb-3 tracking-tight uppercase">{item.id}</h2>
-            <p className={`text-sm mb-10 font-medium ${item.id === "Intermediate" ? "text-white/60" : "text-slate-400"}`}>
+            <p className={`text-sm mb-10 font-medium ${item.id === "Advanced" ? "text-white/60" : "text-slate-400"}`}>
               {item.desc}
             </p>
 
             <div className="flex items-baseline justify-center gap-1 mb-12">
-              <span className={`text-6xl font-black tracking-tighter ${item.id === "Intermediate" ? "text-white" : "text-gradient"}`}>
+              <span className={`text-6xl font-black tracking-tighter ${item.id === "Advanced" ? "text-white" : "text-gradient"}`}>
                 ${item.price}
               </span>
-              <span className={`text-sm font-bold uppercase ${item.id === "Intermediate" ? "text-white/40" : "text-slate-300"}`}>
+              <span className={`text-sm font-bold uppercase ${item.id === "Advanced" ? "text-white/40" : "text-slate-300"}`}>
                 / {item.credits} credits
               </span>
             </div>
@@ -94,12 +94,13 @@ const BuyCredit = () => {
             <button
               onClick={() => handlePurchase(item)}
               className={`radiant-button w-full py-5 rounded-[2rem] font-black text-xl transition-all shadow-xl ${
-                item.id === "Intermediate"
+                item.id === "Advanced"
                   ? "bg-white text-slate-900"
                   : "bg-slate-900 text-white"
-              }`}
+              } ${user && user.purchasedPlans?.includes(item.id) ? "opacity-50 cursor-not-allowed" : ""}`}
+              disabled={user && user.purchasedPlans?.includes(item.id)}
             >
-              Get Started Now
+              {user && user.purchasedPlans?.includes(item.id) ? "Purchased" : "Get Started Now"}
             </button>
           </motion.div>
         ))}
