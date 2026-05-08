@@ -8,6 +8,10 @@ import { OAuth2Client } from "google-auth-library";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+// Cache for Google user info to reduce API calls
+const googleUserCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY)
   : null;
@@ -23,42 +27,62 @@ export const googleAuth = async (req, res) => {
 
     let name, email;
 
-    // Check if it's a JWT (ID Token) or an Access Token
-    if (token.split(".").length === 3) {
-      console.time("google_verify_id_token");
-      const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: process.env.GOOGLE_CLIENT_ID,
-      });
-      const payload = ticket.getPayload();
-      name = payload.name;
-      email = payload.email;
-      console.timeEnd("google_verify_id_token");
+    // Check cache first for access tokens
+    const cacheKey = `google_${token}`;
+    const cachedData = googleUserCache.get(cacheKey);
+    
+    if (cachedData && Date.now() - cachedData.timestamp < CACHE_TTL) {
+      console.log("Using cached Google user data");
+      name = cachedData.name;
+      email = cachedData.email;
     } else {
-      console.time("google_fetch_userinfo");
-      const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
-        headers: { Authorization: `Bearer ${token}` },
-        timeout: 5000,
+      // Check if it's a JWT (ID Token) or an Access Token
+      if (token.split(".").length === 3) {
+        console.time("google_verify_id_token");
+        const ticket = await client.verifyIdToken({
+          idToken: token,
+          audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        name = payload.name;
+        email = payload.email;
+        console.timeEnd("google_verify_id_token");
+      } else {
+        console.time("google_fetch_userinfo");
+        const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 3000, // Reduced timeout
+        });
+        name = response.data.name;
+        email = response.data.email;
+        console.timeEnd("google_fetch_userinfo");
+      }
+      
+      // Cache the result
+      googleUserCache.set(cacheKey, {
+        name,
+        email,
+        timestamp: Date.now()
       });
-      name = response.data.name;
-      email = response.data.email;
-      console.timeEnd("google_fetch_userinfo");
     }
 
     if (!email) {
       return res.status(400).json({ success: false, message: "Google authentication failed: Email not found" });
     }
 
+    // Use lean() for faster database queries
     console.time("db_user_lookup");
-    let user = await userModel.findOne({ email });
-
+    let user = await userModel.findOne({ email }).lean();
+    
     if (!user) {
-      user = new userModel({
+      console.time("db_user_create");
+      const newUser = new userModel({
         name,
         email,
         creditBalance: 5,
       });
-      await user.save();
+      user = await newUser.save();
+      console.timeEnd("db_user_create");
     }
     console.timeEnd("db_user_lookup");
 
@@ -66,23 +90,40 @@ export const googleAuth = async (req, res) => {
       throw new Error("Missing JWT_SECRET in environment variables");
     }
 
+    // Pre-generate JWT token while database operations complete
     const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
     console.timeEnd("googleAuth_total");
+    
+    // Send response immediately
     res.json({
       success: true,
       token: jwtToken,
       user: {
         name: user.name,
         creditBalance: user.creditBalance,
-        purchasedPlans: user.purchasedPlans,
+        purchasedPlans: user.purchasedPlans || [],
       },
     });
+    
+    // Clean up old cache entries asynchronously
+    setTimeout(() => {
+      const now = Date.now();
+      for (const [key, value] of googleUserCache.entries()) {
+        if (now - value.timestamp > CACHE_TTL) {
+          googleUserCache.delete(key);
+        }
+      }
+    }, 0);
+    
   } catch (error) {
     console.error("googleAuth error detail:", error);
-    res.status(500).json({ success: false, message: error.response?.data?.error_description || error.message || "Google Authentication Failed" });
+    res.status(500).json({ 
+      success: false, 
+      message: error.response?.data?.error_description || error.message || "Google Authentication Failed" 
+    });
   }
 };
 

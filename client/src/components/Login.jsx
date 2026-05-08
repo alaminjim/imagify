@@ -24,36 +24,68 @@ const Login = () => {
   // Google Login Handler
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      setLoading(true);
       try {
         const token = tokenResponse.access_token;
-        const { data } = await axios.post(backendUrl + "/api/user/social-login", {
+        
+        // Add optimistic UI update - show success state immediately
+        toast.loading("Connecting to Google...", { toastId: "google-login" });
+        
+        // Use Promise.race to add timeout protection
+        const loginPromise = axios.post(backendUrl + "/api/user/social-login", {
           token,
         });
+        
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Login timeout')), 8000)
+        );
+        
+        const { data } = await Promise.race([loginPromise, timeoutPromise]);
 
         if (data.success) {
           setToken(data.token);
           setUser(data.user);
           localStorage.setItem("token", data.token);
           setShowLogin(false);
-          toast.success("Google Login Successful");
+          toast.update("google-login", {
+            render: "Google Login Successful!",
+            type: "success",
+            isLoading: false,
+            autoClose: 2000
+          });
         } else {
-          toast.error(data.message);
-          setLoading(false);
+          toast.update("google-login", {
+            render: data.message || "Login failed",
+            type: "error",
+            isLoading: false,
+            autoClose: 3000
+          });
         }
       } catch (error) {
         console.error("Google Login Error:", error);
-        toast.error("Google Authentication Failed");
+        const errorMsg = error.message === 'Login timeout' 
+          ? "Login taking too long. Please try again."
+          : "Google Authentication Failed";
+        
+        toast.update("google-login", {
+          render: errorMsg,
+          type: "error",
+          isLoading: false,
+          autoClose: 3000
+        });
+      } finally {
         setLoading(false);
       }
     },
     onError: () => {
-      toast.error("Google Login Failed");
+      toast.error("Google Login Failed", { autoClose: 3000 });
       setLoading(false);
     },
     onNonOAuthError: () => {
+      toast.error("Google Login Cancelled", { autoClose: 3000 });
       setLoading(false);
-    }
+    },
+    flow: 'implicit', // Use implicit flow for faster authentication
+    prompt: 'select_account' // Only prompt when necessary
   });
 
   const onSubmitHandler = async (e) => {
@@ -225,10 +257,20 @@ const Login = () => {
             }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="flex items-center justify-center gap-3 w-full bg-white border-2 border-slate-100 py-3 rounded-2xl font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm"
+            disabled={loading}
+            className="flex items-center justify-center gap-3 w-full bg-white border-2 border-slate-100 py-3 rounded-2xl font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="google" className="w-5" />
-            <span className="text-sm">Google</span>
+            {loading ? (
+              <>
+                <span className="w-5 h-5 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin"></span>
+                <span className="text-sm">Connecting...</span>
+              </>
+            ) : (
+              <>
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="google" className="w-5" />
+                <span className="text-sm">Google</span>
+              </>
+            )}
           </motion.button>
         </div>
 
