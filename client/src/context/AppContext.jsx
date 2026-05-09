@@ -16,7 +16,19 @@ const AppContextProvider = (props) => {
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+  // Pre-warm the server to avoid cold start delays
+  const preWarmServer = async () => {
+    try {
+      // Quietly ping the health endpoint
+      await axios.get(`${backendUrl}/health`);
+      console.log("Server warmed up");
+    } catch (error) {
+      console.error("Warmup failed", error);
+    }
+  };
+
   const loadCreditsData = async () => {
+    if (!token) return;
     try {
       const { data } = await axios.get(`${backendUrl}/api/user/credits`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -71,8 +83,14 @@ const AppContextProvider = (props) => {
     toast.success("Logout successful!");
   };
 
+  // Effect for initial load and server warmup
   useEffect(() => {
-    if (token) {
+    preWarmServer();
+  }, []);
+
+  // Effect for token changes - optimized to avoid redundant calls
+  useEffect(() => {
+    if (token && !user) {
       loadCreditsData();
     }
   }, [token]);
@@ -92,6 +110,7 @@ const AppContextProvider = (props) => {
     generateImage,
     generatedImage,
     setGeneratedImage,
+    preWarmServer
   };
 
   return (

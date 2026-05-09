@@ -9,7 +9,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [state, setState] = useState("Login");
-  const { setShowLogin, backendUrl, setToken, setUser } = useAuth();
+  const { setShowLogin, backendUrl, setToken, setUser, preWarmServer } = useAuth();
   const navigate = useNavigate();
 
   const handleClose = () => {
@@ -140,6 +140,12 @@ const Login = () => {
     };
   }, []);
 
+  const handleDemoLogin = () => {
+    setEmail("user123@gmail.com");
+    setPassword("12345678");
+    toast.info("Demo credentials applied!", { autoClose: 2000 });
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md bg-slate-900/40 transition-all duration-500">
       <motion.form
@@ -218,9 +224,17 @@ const Login = () => {
           </div>
         </div>
 
-        <p className="text-xs text-indigo-600 font-black mt-5 cursor-pointer hover:text-indigo-700 transition-colors text-right uppercase tracking-widest">
-          Forgot password?
-        </p>
+        <div className="flex justify-between items-center mt-5">
+          <p 
+            onClick={handleDemoLogin}
+            className="text-[10px] text-slate-400 font-black cursor-pointer hover:text-indigo-600 transition-colors uppercase tracking-widest border-b border-dotted border-slate-300"
+          >
+            Use Demo Account
+          </p>
+          <p className="text-[10px] text-indigo-600 font-black cursor-pointer hover:text-indigo-700 transition-colors uppercase tracking-widest">
+            Forgot password?
+          </p>
+        </div>
 
         <button 
           type="submit"
@@ -253,6 +267,7 @@ const Login = () => {
             type="button"
             onClick={() => {
               setLoading(true);
+              preWarmServer(); // Ensure server is awake before login request
               googleLogin();
             }}
             whileHover={{ scale: 1.02 }}

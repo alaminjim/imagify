@@ -135,7 +135,7 @@ export const registerUser = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Missing details" });
 
-    const existingUser = await userModel.findOne({ email });
+    const existingUser = await userModel.findOne({ email }).select('_id').lean();
     if (existingUser)
       return res
         .status(400)
@@ -176,7 +176,7 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findOne({ email }).lean();
     if (!user)
       return res
         .status(400)
@@ -220,7 +220,7 @@ export const userCredits = async (req, res) => {
     if (!userId)
       return res.status(401).json({ success: false, message: "Unauthorized" });
 
-    const user = await userModel.findById(userId);
+    const user = await userModel.findById(userId).select('name creditBalance purchasedPlans').lean();
     if (!user)
       return res
         .status(404)

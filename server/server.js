@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import morgan from "morgan";
+import compression from "compression";
 import connectDB from "./config/mongodb.js";
 import userRoute from "./routes/userRoutes.js";
 import imageRouter from "./routes/imageRoutes.js";
@@ -9,7 +10,12 @@ import imageRouter from "./routes/imageRoutes.js";
 const PORT = process.env.PORT || 4000;
 const app = express();
 
-// 1. Strict Environment Variable Validation
+// 1. Performance Middlewares
+app.use(compression()); // Compress all responses
+app.use(express.json({ limit: '1mb' }));
+app.use(morgan("dev"));
+
+// 2. Strict Environment Variable Validation
 const requiredEnvVars = [
   "MONGODB_URI",
   "JWT_SECRET",
@@ -54,9 +60,6 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-app.use(express.json());
-app.use(morgan("dev"));
 
 // Apply database connection middleware to all API routes
 app.use("/api", ensureDBConnection);
