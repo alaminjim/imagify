@@ -20,25 +20,24 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // Google Login Handler
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
         const token = tokenResponse.access_token;
-        
-        // Add optimistic UI update - show success state immediately
+
         toast.loading("Connecting to Google...", { toastId: "google-login" });
-        
-        // Use Promise.race to add timeout protection
+
         const loginPromise = axios.post(backendUrl + "/api/user/social-login", {
           token,
         });
-        
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Login timeout')), 8000)
+
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Login timeout")), 8000)
         );
-        
+
         const { data } = await Promise.race([loginPromise, timeoutPromise]);
 
         if (data.success) {
@@ -50,42 +49,43 @@ const Login = () => {
             render: "Google Login Successful!",
             type: "success",
             isLoading: false,
-            autoClose: 2000
+            autoClose: 2000,
           });
         } else {
           toast.update("google-login", {
             render: data.message || "Login failed",
             type: "error",
             isLoading: false,
-            autoClose: 3000
+            autoClose: 3000,
           });
         }
       } catch (error) {
         console.error("Google Login Error:", error);
-        const errorMsg = error.message === 'Login timeout' 
-          ? "Login taking too long. Please try again."
-          : "Google Authentication Failed";
-        
+        const errorMsg =
+          error.message === "Login timeout"
+            ? "Login taking too long. Please try again."
+            : "Google Authentication Failed";
+
         toast.update("google-login", {
           render: errorMsg,
           type: "error",
           isLoading: false,
-          autoClose: 3000
+          autoClose: 3000,
         });
       } finally {
-        setLoading(false);
+        setGoogleLoading(false);
       }
     },
     onError: () => {
       toast.error("Google Login Failed", { autoClose: 3000 });
-      setLoading(false);
+      setGoogleLoading(false);
     },
     onNonOAuthError: () => {
       toast.error("Google Login Cancelled", { autoClose: 3000 });
-      setLoading(false);
+      setGoogleLoading(false);
     },
-    flow: 'implicit', // Use implicit flow for faster authentication
-    prompt: 'select_account' // Only prompt when necessary
+    flow: "implicit",
+    prompt: "select_account",
   });
 
   const onSubmitHandler = async (e) => {
@@ -266,16 +266,16 @@ const Login = () => {
           <motion.button
             type="button"
             onClick={() => {
-              setLoading(true);
-              preWarmServer(); // Ensure server is awake before login request
+              setGoogleLoading(true);
+              preWarmServer();
               googleLogin();
             }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            disabled={loading}
+            disabled={googleLoading || loading}
             className="flex items-center justify-center gap-3 w-full bg-white border-2 border-slate-100 py-3 rounded-2xl font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {loading ? (
+            {googleLoading ? (
               <>
                 <span className="w-5 h-5 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin"></span>
                 <span className="text-sm">Connecting...</span>
@@ -283,7 +283,7 @@ const Login = () => {
             ) : (
               <>
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="google" className="w-5" />
-                <span className="text-sm">Google</span>
+                <span className="text-sm">Continue with Google</span>
               </>
             )}
           </motion.button>
